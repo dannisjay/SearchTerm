@@ -52,7 +52,7 @@ services:
 docker compose up -d
 ```
 
-容器启动时会自动生成 `config.json`（默认监听 8080、数据目录 /app/data），不需要手动创建。首次访问 http://localhost:8080 使用默认账号 `admin / change-me` 登录，登录后建议在账号设置里修改密码。
+项目没有默认账号/密码。首次访问 http://localhost:8080 时，网页会提示初始化并创建管理员账号和密码；初始化后即可登录。
 
 常用配置可通过环境变量覆盖：
 
@@ -60,8 +60,8 @@ docker compose up -d
     environment:
       - SEARCHTERM_LISTEN=:8080
       - SEARCHTERM_DATA_DIR=/app/data
-      - SEARCHTERM_ADMIN_USER=admin
-      - SEARCHTERM_ADMIN_PASSWORD=change-me
+      - SEARCHTERM_ADMIN_USER=your_admin
+      - SEARCHTERM_ADMIN_PASSWORD=your_password
 ```
 
 支持的环境变量：
