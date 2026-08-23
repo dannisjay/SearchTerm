@@ -1,0 +1,10 @@
+.git/
+data/
+*.log
+config.json
+probe_gying.py
+reference/
+*.tar.gz
+/searchterm
+bin/
+dist/

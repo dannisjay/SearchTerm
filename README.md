@@ -48,6 +48,6 @@ docker compose up -d
 - 115 离线下载：后台配置 Cookie 或扫码登录，然后选择离线保存目录
 - Telegram Bot：后台填写 TG ID 和 Bot Token，向机器人发送关键词即可搜索
 
-## 声明
+## 源码
 
-本仓库仅发布项目介绍与安装说明，源码不公开。
+Docker 版源码位于 `versions/docker/1.9.0`。

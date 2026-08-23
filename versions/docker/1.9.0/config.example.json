@@ -1,0 +1,11 @@
+{
+  "listen": ":8080",
+  "data_dir": "./data",
+  "admin_user": "admin",
+  "admin_password": "change-me",
+  "secret_key": "",
+  "session_ttl_hours": 24,
+  "search_timeout_sec": 90,
+  "search_cache_ttl_min": 5,
+  "public_url": ""
+}

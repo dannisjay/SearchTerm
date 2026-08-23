@@ -1,0 +1,9 @@
+services:
+  searchterm:
+    image: ghcr.io/dannisjay/searchterm:1.9.0
+    container_name: searchterm
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data

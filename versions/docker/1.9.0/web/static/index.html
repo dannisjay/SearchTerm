@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SearchTerm</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="login-screen" class="hidden">
+    <div class="login-box">
+      <h1><span class="brand-mark">S</span>SearchTerm</h1>
+      <p>登录后进入搜索与管理后台</p>
+      <form id="login-form">
+        <label for="username">用户名</label>
+        <input id="username" autocomplete="username" required>
+        <label for="password">密码</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+        <div style="margin-top:16px;">
+          <button class="primary" style="width:100%;" type="submit">登录</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="setup-screen" class="hidden">
+    <div class="login-box">
+      <h1>SearchTerm</h1>
+      <p>首次使用，请设置管理员账号密码</p>
+      <form id="setup-form">
+        <label for="setup-username">用户名</label>
+        <input id="setup-username" autocomplete="username" required>
+        <label for="setup-password">密码</label>
+        <input id="setup-password" type="password" autocomplete="new-password" required minlength="6">
+        <label for="setup-confirm">确认密码</label>
+        <input id="setup-confirm" type="password" autocomplete="new-password" required>
+        <div style="margin-top:16px;">
+          <button class="primary" style="width:100%;" type="submit">完成初始化</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="app">
+    <div class="topbar">
+      <div class="topbar-main">
+        <div class="brand" id="brand-home"><span class="brand-mark">S</span><span>SearchTerm</span></div>
+        <form class="search-form" id="search-form">
+          <div class="search-wrap">
+            <input id="search-input" placeholder="Search" autocomplete="off">
+            <div id="search-history" class="search-history hidden">
+              <div class="search-history-head">
+                <span>最近搜索</span>
+              </div>
+              <div id="history-list"></div>
+            </div>
+          </div>
+          <button class="primary" type="submit">搜索</button>
+        </form>
+        <div class="meta">
+          <button id="admin-toggle" type="button" class="primary">设置中心</button>
+          <div class="avatar-wrap">
+            <img id="avatar-img" class="avatar" alt="头像" title="账号设置" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='32' fill='%23e9eef2'/><circle cx='32' cy='25' r='9' fill='%2394a3b8'/><path d='M14 54c2.6-9 10-13 18-13s15.4 4 18 13z' fill='%2394a3b8'/></svg>">
+            <div id="avatar-menu" class="avatar-menu hidden">
+              <button id="menu-offline" type="button">批量离线</button>
+              <button id="menu-net" type="button">网络测试</button>
+              <button id="menu-logout" type="button">退出登录</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <p class="status-line" id="status-line"></p>
+      <div id="filter-bar" class="filter-bar hidden">
+        <div id="site-filter-row" class="site-filter-row">
+          <span class="muted">站点</span>
+          <select id="site-filter">
+            <option value="">全部</option>
+          </select>
+        </div>
+        <div class="sort-row">
+          <span class="muted">排序</span>
+          <select id="sort-filter">
+            <option value="">默认</option>
+            <option value="size_asc">文件大小正序</option>
+            <option value="size_desc">文件大小倒序</option>
+            <option value="time_asc">发布时间正序</option>
+            <option value="time_desc">发布时间倒序</option>
+          </select>
+        </div>
+      </div>
+      <div id="results"></div>
+      <div id="pagination"></div>
+
+      <div id="admin-panel" class="hidden">
+        <div class="admin-layout">
+          <div class="admin-sidebar">
+<button data-tab="sites" class="active">站点配置</button>
+            <button data-tab="tg">TG Bot</button>
+            <button data-tab="p115">115管理</button>
+            <button data-tab="appearance">外观设置</button>
+            <button data-tab="account">账号设置</button>
+          </div>
+          <div class="admin-content">
+            <div class="admin-section" id="tab-sites">
+              <div id="site-blocks"></div>
+            </div>
+
+            <div class="admin-section hidden" id="tab-tg">
+              <p class="help">TG ID 是允许使用机器人的用户数字 ID，多个用分号“;”隔开；Bot Token 在 Telegram 的 BotFather 中创建机器人后获取。机器人菜单包含 /start、/help、/status，支持关键词搜索，也支持直接把磁力或 ed2k 链接发过来（混合文本也会自动识别），选择离线目录后添加到 115。</p>
+              <h3>TG 机器人</h3>
+              <label>TG ID（多个用 ; 隔开）</label>
+              <input id="tg-user-ids" autocomplete="off" placeholder="123456789;987654321">
+              <label>Bot Token</label>
+              <div class="token-row">
+                <input id="tg-bot-token" type="password" autocomplete="off" placeholder="123456:ABC...">
+                <button id="tg-token-eye" type="button" title="显示/隐藏">👁</button>
+              </div>
+              <div style="margin-top:10px;">
+                <button class="primary" id="tg-save">保存</button>
+              </div>
+            </div>
+
+            <div class="admin-section hidden" id="tab-appearance">
+              <p class="help">填写背景图 URL（支持 http/https 图床地址），保存后登录页、首页和管理后台都会生效；留空则恢复默认背景。</p>
+              <h3>外观设置</h3>
+              <label>背景图 URL</label>
+              <div class="token-row">
+                <input id="bg-image-url" type="url" autocomplete="off" placeholder="https://example.com/background.jpg">
+                <button id="bg-image-clear" class="wide" type="button" title="清除背景图">清除</button>
+              </div>
+              <div id="bg-preview" class="bg-preview"></div>
+              <div class="row-actions">
+                <button class="primary" id="bg-image-save">保存背景设置</button>
+              </div>
+            </div>
+
+            <div class="admin-section hidden" id="tab-p115">
+              <p class="help">登录方式选 Cookie 时直接粘贴 115 Cookie；选二维码时用 115 App 扫码后获取 Token，再选择设备保存，系统会自动换成对应设备的 Cookie。保存后会自动校验，页面打开时也会自动校验一次。</p>
+              <h3>115管理</h3>
+              <p class="muted" id="p115-status"></p>
+              <label>登录方式</label>
+              <select id="p115-mode">
+                <option value="cookie">Cookie</option>
+                <option value="qrcode">二维码</option>
+              </select>
+
+              <div id="p115-cookie-fields">
+                <label>Cookie</label>
+                <div class="token-row">
+                  <input id="p115-cookie" type="password" autocomplete="off">
+                  <button id="p115-cookie-eye" type="button" title="显示/隐藏">👁</button>
+                </div>
+              </div>
+
+              <div id="p115-qrcode-fields" class="hidden">
+                <label>二维码令牌</label>
+                <div class="token-row">
+                  <input id="p115-qrcode-token" type="password" autocomplete="off" placeholder="扫码后获取的 Token">
+                  <button id="p115-token-eye" type="button" title="显示/隐藏">👁</button>
+                  <button id="p115-token-clear" class="wide" type="button">清除</button>
+                </div>
+                <label>二维码源设备（推荐支付宝/微信小程序）</label>
+                <select id="p115-qrcode-source">
+                  <option value="alipaymini">支付宝小程序</option>
+                  <option value="wechatmini">微信小程序</option>
+                  <option value="tv">TV</option>
+                  <option value="qandroid">115管理-安卓</option>
+                  <option value="web">Web</option>
+                  <option value="android">Android</option>
+                  <option value="ios">iOS</option>
+                </select>
+                <div class="row-actions">
+                  <button id="p115-qrcode">获取二维码</button>
+                </div>
+              </div>
+
+              <div class="row-actions">
+                <button class="primary" id="p115-save">保存配置</button>
+              </div>
+
+              <label>已选离线目录（最多 6 个）</label>
+              <div class="path-chips" id="p115-save-paths"></div>
+              <p class="help">最多选择 6 个离线目录。网页端和 TG 机器人添加离线任务时，会弹出选项让你选择保存到哪个目录。</p>
+              <div class="row-actions">
+                <button id="p115-config-dirs">配置离线目录</button>
+              </div>
+            </div>
+
+            <div class="admin-section hidden" id="tab-account">
+              <p class="help">可修改登录用户名、密码和头像。修改密码需要先输入当前密码；头像会显示在首页右上角。</p>
+              <h3>账号设置</h3>
+              <label>头像</label>
+              <div class="avatar-upload">
+                <img id="avatar-preview" class="avatar avatar-lg" alt="头像预览">
+                <input id="account-avatar-file" type="file" accept="image/*" class="hidden">
+                <button id="account-avatar-pick" type="button">选择头像</button>
+              </div>
+              <label>用户名</label>
+              <input id="account-username" autocomplete="off">
+              <label>当前密码（修改密码时必填）</label>
+              <input id="account-old-password" type="password" autocomplete="current-password">
+              <label>新密码</label>
+              <input id="account-new-password" type="password" autocomplete="new-password">
+              <label>确认新密码</label>
+              <input id="account-confirm-password" type="password" autocomplete="new-password">
+              <div style="margin-top:10px;">
+                <button class="primary" id="account-save">保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="network-modal" class="modal hidden">
+    <div class="modal-box">
+      <h3>网络测试</h3>
+      <p class="muted" id="network-status">正在测试…</p>
+      <div id="network-results"></div>
+      <div class="row-actions">
+        <button class="primary" id="network-refresh">立即重测</button>
+        <button id="network-close">关闭</button>
+      </div>
+    </div>
+  </div>
+  <div id="offline-modal" class="modal hidden">
+    <div class="modal-box">
+      <h3>批量离线到 115</h3>
+      <label>磁力 / ed2k 链接（混合文本会自动识别，多个也可以一起粘贴）</label>
+      <textarea id="offline-links" rows="6" autocomplete="off" placeholder="magnet:?xt=urn:btih:...&#10;ed2k://|file|..."></textarea>
+      <label>保存到</label>
+      <div id="offline-path-options"></div>
+      <div class="row-actions">
+        <button class="primary" id="offline-submit">开始离线</button>
+        <button id="offline-cancel">取消</button>
+      </div>
+    </div>
+  </div>
+  <div id="save115-modal" class="modal hidden">
+    <div class="modal-box">
+      <h3>选择 115 离线目录</h3>
+      <div id="save115-options"></div>
+      <button id="save115-cancel">取消</button>
+    </div>
+  </div>
+
+  <div id="p115-dir-modal" class="modal hidden">
+    <div class="modal-box">
+      <h3>配置 115 离线目录</h3>
+      <div class="dir-bar">
+        <span id="p115-dir-path" class="muted"></span>
+        <button id="p115-root-dir">根目录</button>
+        <button id="p115-up-dir">返回上级</button>
+        <button id="p115-select-current">选择当前目录</button>
+      </div>
+      <div id="p115-dir-list"></div>
+      <button id="p115-dir-close">完成</button>
+    </div>
+  </div>
+
+  <div id="qrcode-modal" class="modal hidden">
+    <div class="modal-box qrcode-box">
+      <h3>115 扫码登录</h3>
+      <p class="muted" id="qrcode-status">正在获取二维码…</p>
+      <div class="qrcode-img-wrap">
+        <img id="qrcode-img" alt="115 登录二维码">
+      </div>
+      <button id="qrcode-grab-token" class="primary hidden">获取 Token</button>
+      <button id="qrcode-close">关闭</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
